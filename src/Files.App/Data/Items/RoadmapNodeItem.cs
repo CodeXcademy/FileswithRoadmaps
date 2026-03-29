@@ -1,6 +1,7 @@
 // Copyright (c) Files Community
 // Licensed under the MIT License.
 
+using Files.App.Utils.Shell;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Win32;
 using Windows.Win32.UI.Shell;
@@ -44,15 +45,22 @@ namespace Files.App.Data.Items
 			var thumbnailSize = (int)(Constants.ShellIconSizes.Large * App.AppModel.AppWindowDPI);
 			thumbnailSize = Math.Max(1, thumbnailSize);
 
-			var shellItem = await FilesystemTasks.Wrap(() => StorageFileExtensions.GetShellFileItemFromPathAsync(Path));
-			if (shellItem is null)
-				return;
+			await Task.Run(() =>
+			{
+				using var shellItem = ShellFolderExtensions.GetShellItemFromPathOrPIDL(Path);
+				if (shellItem is null)
+					return;
 
-			shellItem.TryGetThumbnail(thumbnailSize, SIIGBF.SIIGBF_ICONONLY, out var rawThumbnailData);
-			if (rawThumbnailData is null)
-				return;
+				shellItem.TryGetThumbnail(thumbnailSize, SIIGBF.SIIGBF_ICONONLY, out var rawThumbnailData);
+				if (rawThumbnailData is null)
+					return;
 
-			Thumbnail = await rawThumbnailData.ToBitmapAsync();
+				_ = rawThumbnailData.ToBitmapAsync().AsTask().ContinueWith(t =>
+				{
+					if (t.Result is not null)
+						Thumbnail = t.Result;
+				});
+			});
 		}
 
 		public void Dispose()

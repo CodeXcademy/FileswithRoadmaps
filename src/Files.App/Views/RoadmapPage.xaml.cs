@@ -119,7 +119,7 @@ namespace Files.App.Views
 			}
 		}
 
-		private void NodeButton_PointerPressed(Microsoft.UI.Xaml.Input.PointerRoutedEventArgs sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+		private void NodeButton_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
 		{
 			if (e.GetCurrentPoint((UIElement)sender).Properties.IsMiddleButtonPressed)
 			{

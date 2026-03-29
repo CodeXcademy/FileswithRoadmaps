@@ -30,12 +30,17 @@ namespace Files.App.ViewModels.UserControls.Widgets
 		public bool ShowMenuFlyout => true;
 		public MenuFlyoutItem? MenuFlyoutItem => null;
 
+		private RelayCommand<RoadmapNodeItem>? OpenFileLocationCommand;
+		private RelayCommand<RoadmapNodeItem>? OpenPropertiesCommand;
+		private RelayCommand<RoadmapNodeItem>? RemoveNodeCommand;
+
 		public RoadmapWidgetViewModel()
 		{
 			RoadmapService = Ioc.Default.GetRequiredService<IRoadmapService>();
 
 			OpenFileLocationCommand = new RelayCommand<RoadmapNodeItem>(ExecuteOpenFileLocationCommand);
 			OpenPropertiesCommand = new RelayCommand<RoadmapNodeItem>(ExecuteOpenPropertiesCommand);
+			RemoveNodeCommand = new RelayCommand<RoadmapNodeItem>(ExecuteRemoveNodeCommand);
 		}
 
 		public async Task RefreshWidgetAsync()
@@ -213,37 +218,49 @@ namespace Files.App.ViewModels.UserControls.Widgets
 			OpenProperties(item.Path);
 		}
 
+		private async void ExecuteRemoveNodeCommand(RoadmapNodeItem? item)
+		{
+			if (item is null)
+				return;
+
+			await RemoveNodeAsync(item.Item.Id);
+		}
+
 		public override List<ContextMenuFlyoutItemViewModel> GetItemMenuItems(WidgetCardItem item, bool isPinned, bool isFolder = false)
 		{
-			var menuItems = new List<ContextMenuFlyoutItemViewModel>();
-
-			menuItems.Add(new ContextMenuFlyoutItemViewModelBuilder(CommandManager.OpenInNewTabFromHome)
+			return new List<ContextMenuFlyoutItemViewModel>()
 			{
-				IsVisible = UserSettingsService.GeneralSettingsService.ShowOpenInNewTab
-			}.Build());
-
-			menuItems.Add(new ContextMenuFlyoutItemViewModelBuilder(CommandManager.OpenInNewWindowFromHome)
-			{
-				IsVisible = UserSettingsService.GeneralSettingsService.ShowOpenInNewWindow
-			}.Build());
-
-			menuItems.Add(new ContextMenuFlyoutItemViewModelBuilder(CommandManager.OpenFileLocation)
-			{
-				IsVisible = isFolder || !string.IsNullOrEmpty(Path.GetExtension(item.Path ?? ""))
-			}.Build());
-
-			menuItems.Add(new ContextMenuFlyoutItemViewModelBuilder(CommandManager.OpenProperties)
-			{
-				IsVisible = CommandManager.OpenProperties.IsExecutable
-			}.Build());
-
-			menuItems.Add(new ContextMenuFlyoutItemViewModelBuilder(RemoveRecentItemCommand)
-			{
-				IsVisible = true,
-				Item = item
-			}.Build());
-
-			return menuItems;
+				new ContextMenuFlyoutItemViewModelBuilder(CommandManager.OpenInNewTabFromHome)
+				{
+					IsVisible = UserSettingsService.GeneralSettingsService.ShowOpenInNewTab
+				}.Build(),
+				new ContextMenuFlyoutItemViewModelBuilder(CommandManager.OpenInNewWindowFromHome)
+				{
+					IsVisible = UserSettingsService.GeneralSettingsService.ShowOpenInNewWindow
+				}.Build(),
+				new()
+				{
+					Text = Strings.OpenFileLocation.GetLocalizedResource(),
+					Glyph = "\uED25",
+					Command = OpenFileLocationCommand,
+					CommandParameter = item,
+					IsVisible = isFolder || !string.IsNullOrEmpty(Path.GetExtension(item.Path ?? ""))
+				},
+				new()
+				{
+					Text = Strings.Properties.GetLocalizedResource(),
+					Command = OpenPropertiesCommand,
+					CommandParameter = item,
+					IsVisible = CommandManager.OpenProperties.IsExecutable
+				},
+				new()
+				{
+					Text = Strings.ItemDelete.GetLocalizedResource(),
+					Glyph = "\uE74D",
+					Command = RemoveNodeCommand,
+					CommandParameter = item
+				}
+			};
 		}
 
 		public void Dispose()
