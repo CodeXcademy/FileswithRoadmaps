@@ -245,5 +245,11 @@ namespace Files.App.ViewModels.UserControls.Widgets
 
 			return menuItems;
 		}
+
+		public void Dispose()
+		{
+			foreach (var item in Nodes)
+				item.Dispose();
+		}
 	}
 }
