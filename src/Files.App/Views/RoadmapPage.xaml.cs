@@ -5,7 +5,6 @@ using Files.App.Data.Contracts;
 using Files.App.Data.Items;
 using Files.App.Data.Models;
 using Files.App.Helpers;
-using Files.App.Utils.Storage.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.IO;

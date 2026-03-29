@@ -6,13 +6,11 @@ using Files.App.Data.Items;
 using Files.App.Data.Models;
 using Files.App.Helpers;
 using Files.App.Utils;
-using Files.App.Utils.Storage.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.ObjectModel;
 using System.IO;
 using Windows.Storage;
-using Windows.Win32;
 
 namespace Files.App.ViewModels.UserControls.Widgets
 {
@@ -181,8 +179,18 @@ namespace Files.App.ViewModels.UserControls.Widgets
 
 		public void OpenProperties(string path)
 		{
-			var storable = new FileSystemStorageItem(path, StorageItemTypes.File);
-			FilePropertiesHelpers.OpenPropertiesWindow(storable, ContentPageContext.ShellPage!);
+			var itemPath = path;
+			var itemName = Path.GetFileName(path);
+			var isFolder = Directory.Exists(path);
+
+			ListedItem listedItem = new(path)
+			{
+				ItemPath = itemPath,
+				ItemNameRaw = itemName,
+				PrimaryItemAttribute = isFolder ? StorageItemTypes.Folder : StorageItemTypes.File,
+			};
+
+			FilePropertiesHelpers.OpenPropertiesWindow(listedItem, ContentPageContext.ShellPage!);
 		}
 
 		private void ExecuteOpenFileLocationCommand(RoadmapNodeItem? item)
