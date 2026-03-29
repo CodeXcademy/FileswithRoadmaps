@@ -228,7 +228,7 @@ namespace Files.App.ViewModels.UserControls.Widgets
 
 		public override List<ContextMenuFlyoutItemViewModel> GetItemMenuItems(WidgetCardItem item, bool isPinned, bool isFolder = false)
 		{
-			return new List<ContextMenuFlyoutItemViewModel>()
+			var items = new List<ContextMenuFlyoutItemViewModel>
 			{
 				new ContextMenuFlyoutItemViewModelBuilder(CommandManager.OpenInNewTabFromHome)
 				{
@@ -237,30 +237,39 @@ namespace Files.App.ViewModels.UserControls.Widgets
 				new ContextMenuFlyoutItemViewModelBuilder(CommandManager.OpenInNewWindowFromHome)
 				{
 					IsVisible = UserSettingsService.GeneralSettingsService.ShowOpenInNewWindow
-				}.Build(),
-				new()
+				}.Build()
+			};
+
+			if (isFolder || !string.IsNullOrEmpty(Path.GetExtension(item.Path ?? "")))
+			{
+				items.Add(new ContextMenuFlyoutItemViewModel
 				{
 					Text = Strings.OpenFileLocation.GetLocalizedResource(),
 					Glyph = "\uED25",
 					Command = OpenFileLocationCommand,
 					CommandParameter = item,
-					IsVisible = isFolder || !string.IsNullOrEmpty(Path.GetExtension(item.Path ?? ""))
-				},
-				new()
-				{
-					Text = Strings.Properties.GetLocalizedResource(),
-					Command = OpenPropertiesCommand,
-					CommandParameter = item,
-					IsVisible = CommandManager.OpenProperties.IsExecutable
-				},
-				new()
-				{
-					Text = Strings.ItemDelete.GetLocalizedResource(),
-					Glyph = "\uE74D",
-					Command = RemoveNodeCommand,
-					CommandParameter = item
-				}
-			};
+					ShowItem = true
+				});
+			}
+
+			items.Add(new ContextMenuFlyoutItemViewModel
+			{
+				Text = Strings.Properties.GetLocalizedResource(),
+				Command = OpenPropertiesCommand,
+				CommandParameter = item,
+				ShowItem = CommandManager.OpenProperties.IsExecutable
+			});
+
+			items.Add(new ContextMenuFlyoutItemViewModel
+			{
+				Text = Strings.Delete.GetLocalizedResource(),
+				Glyph = "\uE74D",
+				Command = RemoveNodeCommand,
+				CommandParameter = item,
+				ShowItem = true
+			});
+
+			return items;
 		}
 
 		public void Dispose()

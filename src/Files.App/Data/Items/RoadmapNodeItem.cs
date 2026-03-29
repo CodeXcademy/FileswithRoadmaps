@@ -1,10 +1,7 @@
 // Copyright (c) Files Community
 // Licensed under the MIT License.
 
-using Files.App.Utils.Shell;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Windows.Win32;
-using Windows.Win32.UI.Shell;
 
 namespace Files.App.Data.Items
 {
@@ -23,8 +20,7 @@ namespace Files.App.Data.Items
 		public double PositionX { get; set; }
 		public double PositionY { get; set; }
 
-		private BitmapImage? _Thumbnail;
-		public BitmapImage? Thumbnail { get => _Thumbnail; set => SetProperty(ref _Thumbnail, value); }
+		public BitmapImage? Thumbnail { get; set; }
 
 		public RoadmapNodeItem(RoadmapNodeModel item)
 		{
@@ -37,30 +33,9 @@ namespace Files.App.Data.Items
 			PositionY = item.PositionY;
 		}
 
-		public async Task LoadCardThumbnailAsync()
+		public Task LoadCardThumbnailAsync()
 		{
-			if (string.IsNullOrEmpty(Path))
-				return;
-
-			var thumbnailSize = (int)(Constants.ShellIconSizes.Large * App.AppModel.AppWindowDPI);
-			thumbnailSize = Math.Max(1, thumbnailSize);
-
-			await Task.Run(() =>
-			{
-				using var shellItem = ShellFolderExtensions.GetShellItemFromPathOrPIDL(Path);
-				if (shellItem is null)
-					return;
-
-				shellItem.TryGetThumbnail(thumbnailSize, SIIGBF.SIIGBF_ICONONLY, out var rawThumbnailData);
-				if (rawThumbnailData is null)
-					return;
-
-				_ = rawThumbnailData.ToBitmapAsync().AsTask().ContinueWith(t =>
-				{
-					if (t.Result is not null)
-						Thumbnail = t.Result;
-				});
-			});
+			return Task.CompletedTask;
 		}
 
 		public void Dispose()
