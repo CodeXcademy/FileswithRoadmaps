@@ -1,0 +1,147 @@
+<!--  Copyright (c) Files Community. Licensed under the MIT License.  -->
+<UserControl
+	x:Class="Files.App.UserControls.Widgets.RoadmapWidget"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:dataitems="using:Files.App.Data.Items"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:wctconverters="using:CommunityToolkit.WinUI.Converters"
+	DataContext="{x:Bind ViewModel, Mode=OneWay}"
+	mc:Ignorable="d">
+
+	<UserControl.Resources>
+		<wctconverters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+	</UserControl.Resources>
+
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+
+		<Grid Grid.Row="0" Margin="8,8,8,4">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+
+			<ComboBox
+				x:Name="RoadmapSelector"
+				Grid.Column="0"
+				HorizontalAlignment="Stretch"
+				ItemsSource="{x:Bind ViewModel.Roadmaps, Mode=OneWay}"
+				SelectedItem="{x:Bind ViewModel.SelectedRoadmap, Mode=TwoWay}"
+				SelectionChanged="RoadmapSelector_SelectionChanged">
+				<ComboBox.ItemTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding Name}" />
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+			</ComboBox>
+
+			<StackPanel Grid.Column="1" Orientation="Horizontal">
+				<Button
+					 Margin="4,0,0,0"
+					Click="AddRoadmapButton_Click"
+					ToolTip="Create new roadmap">
+					<FontIcon Glyph="&#xE710;" />
+				</Button>
+				<Button
+					 Margin="4,0,0,0"
+					Click="AddNodeButton_Click"
+					ToolTip="Add file or folder to roadmap">
+					<FontIcon Glyph="&#xE8F4;" />
+				</Button>
+			</StackPanel>
+		</Grid>
+
+		<TextBlock
+			Grid.Row="1"
+			Margin="8,4"
+			FontWeight="SemiBold"
+			Text="{Binding SelectedRoadmap.Name, Mode=OneWay, FallbackValue='Select a roadmap'}" />
+
+		<ScrollViewer
+			Grid.Row="2"
+			HorizontalScrollBarVisibility="Auto"
+			VerticalScrollBarVisibility="Auto">
+			<ItemsControl ItemsSource="{x:Bind ViewModel.Nodes, Mode=OneWay}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<Canvas
+							MinWidth="800"
+							MinHeight="600"
+							Background="Transparent" />
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemContainerStyle>
+					<Style TargetType="ContentPresenter">
+						<Setter Property="Canvas.Left" Value="{Binding PositionX}" />
+						<Setter Property="Canvas.Top" Value="{Binding PositionY}" />
+					</Style>
+				</ItemsControl.ItemContainerStyle>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="dataitems:RoadmapNodeItem">
+						<Button
+							Width="120"
+							Height="100"
+							Padding="8"
+							HorizontalAlignment="Center"
+							VerticalAlignment="Center"
+							AutomationProperties.Name="{x:Bind Text}"
+							Click="NodeButton_Click"
+							CornerRadius="{StaticResource ControlCornerRadius}"
+							PointerPressed="NodeButton_PointerPressed"
+							RightTapped="NodeButton_RightTapped"
+							Tag="{Binding}">
+							<Button.ContextFlyout>
+								<MenuFlyout>
+									<MenuFlyoutItem
+										Click="OpenNode_Click"
+										Text="Open" />
+									<MenuFlyoutItem
+										Click="OpenInNewTabNode_Click"
+										Text="Open in New Tab" />
+									<MenuFlyoutItem
+										Click="OpenLocationNode_Click"
+										Text="Open File Location" />
+									<MenuFlyoutSeparator />
+									<MenuFlyoutItem
+										Click="PropertiesNode_Click"
+										Text="Properties" />
+									<MenuFlyoutSeparator />
+									<MenuFlyoutItem
+										Click="RemoveNode_Click"
+										Text="Remove from Roadmap" />
+								</MenuFlyout>
+							</Button.ContextFlyout>
+							<StackPanel HorizontalAlignment="Center">
+								<Image
+									x:Name="NodeThumbnail"
+									Width="40"
+									Height="40"
+									Margin="0,0,0,4"
+									Source="{Binding Thumbnail, Mode=OneWay}" />
+								<FontIcon
+									x:Name="DefaultIcon"
+									Width="40"
+									Height="40"
+									Margin="0,0,0,4"
+									FontSize="32"
+									Glyph="&#xE8B7;" />
+								<TextBlock
+									HorizontalAlignment="Center"
+									MaxWidth="100"
+									Text="{Binding Text}"
+									TextAlignment="Center"
+									TextTrimming="CharacterEllipsis" />
+							</StackPanel>
+						</Button>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</ScrollViewer>
+	</Grid>
+</UserControl>
