@@ -21,7 +21,7 @@ namespace Files.App.ViewModels.UserControls.Widgets
 		public ObservableCollection<RoadmapModel> Roadmaps { get; } = [];
 		public ObservableCollection<RoadmapNodeItem> Nodes { get; } = [];
 
-		public RoadmapModel? SelectedRoadmap { get; private set; }
+		public RoadmapModel? SelectedRoadmap { get; set; }
 
 		public string WidgetName => nameof(RoadmapWidget);
 		public string AutomationProperties => "Roadmap";
