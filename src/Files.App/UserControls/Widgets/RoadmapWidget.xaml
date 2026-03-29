@@ -45,13 +45,13 @@
 				<Button
 					 Margin="4,0,0,0"
 					Click="AddRoadmapButton_Click"
-					ToolTip="Create new roadmap">
+					ToolTipService.ToolTip="Create new roadmap">
 					<FontIcon Glyph="&#xE710;" />
 				</Button>
 				<Button
 					 Margin="4,0,0,0"
 					Click="AddNodeButton_Click"
-					ToolTip="Add file or folder to roadmap">
+					ToolTipService.ToolTip="Add file or folder to roadmap">
 					<FontIcon Glyph="&#xE8F4;" />
 				</Button>
 			</StackPanel>
