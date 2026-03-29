@@ -3,10 +3,15 @@
 	x:Class="Files.App.Views.RoadmapPage"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:converters="using:Files.App.Converters"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:dataitems="using:Files.App.Data.Items"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d">
+
+	<Page.Resources>
+		<converters:NullToVisibilityCollapsedConverter x:Key="NullToVisibilityCollapsedConverter" />
+	</Page.Resources>
 
 	<Grid>
 		<Grid.RowDefinitions>
@@ -30,13 +35,13 @@
 
 			<StackPanel
 				Grid.Column="2"
-				Orientation="Horizontal"
-				Spacing="8">
+				Orientation="Horizontal">
 				<Button
+					Margin="0,0,8,0"
 					Padding="12,8"
 					Click="CreateRoadmap_Click"
 					Style="{StaticResource AccentButtonStyle}">
-					<StackPanel Orientation="Horizontal" Spacing="8">
+					<StackPanel Orientation="Horizontal">
 						<FontIcon Glyph="&#xE710;" />
 						<TextBlock Text="New Roadmap" />
 					</StackPanel>
@@ -44,7 +49,7 @@
 				<Button
 					Padding="12,8"
 					Click="AddNode_Click">
-					<StackPanel Orientation="Horizontal" Spacing="8">
+					<StackPanel Orientation="Horizontal">
 						<FontIcon Glyph="&#xE8F4;" />
 						<TextBlock Text="Add File/Folder" />
 					</StackPanel>
@@ -151,14 +156,15 @@
 											Width="48"
 											Height="48"
 											Margin="0,0,0,8"
-											Source="{Binding Thumbnail, Mode=OneWay}" />
+											Source="{Binding Thumbnail, Mode=OneWay}"
+											Visibility="{Binding Thumbnail, Converter={StaticResource NullToVisibilityCollapsedConverter}}" />
 										<FontIcon
 											Width="48"
 											Height="48"
 											Margin="0,0,0,8"
 											FontSize="32"
 											Glyph="&#xE8B7;"
-											Visibility="{Binding Thumbnail, Converter={StaticResource InverseBoolToVisibilityConverter}}" />
+											Visibility="Collapsed" />
 										<TextBlock
 											HorizontalAlignment="Center"
 											MaxWidth="120"

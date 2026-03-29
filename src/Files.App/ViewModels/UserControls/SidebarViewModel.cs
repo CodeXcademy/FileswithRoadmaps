@@ -79,7 +79,8 @@ namespace Files.App.ViewModels.UserControls
 				SectionType.CloudDrives,
 				SectionType.Network,
 				SectionType.WSL,
-				SectionType.FileTag
+				SectionType.FileTag,
+				SectionType.Roadmap
 			];
 
 		public bool IsSidebarCompactSize
@@ -569,6 +570,14 @@ namespace Files.App.ViewModels.UserControls
 
 						break;
 					}
+
+				case SectionType.Roadmap:
+					{
+						section = BuildSection(Strings.Roadmap.GetLocalizedResource(), sectionType, new ContextMenuOptions { IsLocationItem = true }, true);
+						section.Path = "Roadmap";
+						section.Icon = new BitmapImage(new Uri(Constants.FluentIconsPaths.HomeIcon));
+						break;
+					}
 			}
 
 			if (section is not null)
@@ -818,6 +827,11 @@ namespace Files.App.ViewModels.UserControls
 						{
 							navigationPath = "Home";
 							sourcePageType = typeof(HomePage);
+						}
+						else if (ItemPath != null && ItemPath.Equals("Roadmap", StringComparison.OrdinalIgnoreCase))
+						{
+							navigationPath = "Roadmap";
+							sourcePageType = typeof(RoadmapPage);
 						}
 						else
 						{
